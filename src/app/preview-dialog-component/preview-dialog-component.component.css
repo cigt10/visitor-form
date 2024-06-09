@@ -1,0 +1,55 @@
+                    .identity-card {
+                        border: 1px solid #333;
+                        border-radius: 0;
+                        padding: 20px;
+                        width: 300px;
+                        background-color: white;
+                        color: #333;
+                        @media print {
+                            .print-button,
+                            .dialog-header {
+                                display: none;
+                                /* Hide the print button when printing */
+                            }
+                        }
+                    }
+                    
+                    .field {
+                        margin-bottom: 10px;
+                    }
+                    
+                    .label {
+                        font-weight: bold;
+                    }
+                    
+                    .value {
+                        margin-left: 10px;
+                    }
+                    
+                    .print-button {
+                        background-color: blue;
+                        border: none;
+                        color: black;
+                        padding: 15px 32px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        margin: 4px 2px;
+                        cursor: pointer;
+                        border-radius: 10px;
+                    }
+                    
+                    .visitor-photo {
+                        width: 100px;
+                        height: 100px;
+                    }
+                    
+                    .dialog-header {
+                        display: flex;
+                        justify-content: flex-end;
+                    }
+                    
+                    .dialog-content {
+                        padding: 20px;
+                    }

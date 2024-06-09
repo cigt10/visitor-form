@@ -1,0 +1,136 @@
+<div class="visitor-list-container" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">>
+    <h2>Visitor Data</h2>
+    <div class="visitor">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>LIC No</th>
+                    <th>Mobile</th>
+                    <th>Meet To</th>
+                    <th>Department</th>
+                    <th>Purpose Remark</th>
+                    <th>Purpose Group</th>
+                    <th>Time In</th>
+                    <th>Time Out</th>
+                    <th>Other Remark</th>
+                    <th>Visit Card</th>
+                    <th>Photo</th>
+                    <th>Created Date</th>
+                    <th>Updated Date</th>
+                </tr>
+            </thead>
+        </table>
+        <div class="table-body">
+            <table class="table" *ngFor="let visitor of allVisitors">
+                <tbody>
+                    <!-- <tr *ngIf="loading" class="loading"> -->
+                    <tr>
+                        <td>{{ visitor.name }}</td>
+                        <td>{{ visitor.licNo }}</td>
+                        <td>{{ visitor.mobile }}</td>
+                        <td>{{ visitor.meetTo }}</td>
+                        <td>{{ visitor.department }}</td>
+                        <td>{{ visitor.purposeRemark }}</td>
+                        <td>{{ visitor.purposeGroup }}</td>
+                        <td>{{ visitor.timein }}</td>
+                        <td>{{ visitor.timeout }}</td>
+                        <td>{{ visitor.otherRemark }}</td>
+                        <td>{{ visitor.visitCard }}</td>
+                        <td>
+                            <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 100px;">
+                        </td>
+                        <td>{{ visitor.created_date }}</td>
+                        <td>{{ visitor.updated_date }}</td>
+                        <td>
+                            <button class="btn btn-primary" (click)="getVisitor(visitor.id)">Edit</button>
+                            <button class="btn btn-danger" (click)="deleteVisitor(visitor.id)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <button (click)="exportToExcel()" class="btn btn-secondary">Export to Excel</button>
+</div>
+
+<div class="visitor-form-container">
+    <h2>Visitor Form</h2>
+    <form #visitorForm="ngForm" (ngSubmit)="onSubmit(visitorForm)" class="visitor-form">
+        <div class="form-group">
+            <label for="searchQuery">Search:</label>
+            <input type="text" id="searchQuery" name="searchQuery" [(ngModel)]="searchQuery" (input)="search()" class="form-control">
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" [(ngModel)]="selectedVisitor.name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="licNo">LIC No:</label>
+                <input type="text" id="licNo" name="licNo" [(ngModel)]="selectedVisitor.licNo" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile:</label>
+                <input type="text" id="mobile" name="mobile" [(ngModel)]="selectedVisitor.mobile" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="meetTo">Meet To:</label>
+                <input type="text" id="meetTo" name="meetTo" [(ngModel)]="selectedVisitor.meetTo" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department:</label>
+                <select id="department" name="department" [(ngModel)]="selectedVisitor.department" class="form-control" required>
+                    <option value="" disabled selected>Select department</option>
+                    <option value="HR">HR</option>
+                    <option value="Finance">Finance</option>
+                    <option value="IT">IT</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="purposeRemark">Purpose Remark:</label>
+                <textarea id="purposeRemark" name="purposeRemark" [(ngModel)]="selectedVisitor.purposeRemark" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="purposeGroup">Purpose Group:</label>
+                <select id="purposeGroup" name="purposeGroup" [(ngModel)]="selectedVisitor.purposeGroup" class="form-control">
+                    <option value="Option 1">Option 1</option>
+                    <option value="Option 2">Option 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="timeIn">Time In:</label>
+                <input type="datetime-local" id="timeIn" name="timeIn" [(ngModel)]="selectedVisitor.timein" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="timeOut">Time Out:</label>
+                <input type="datetime-local" id="timeOut" name="timeOut" [(ngModel)]="selectedVisitor.timeout" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="otherRemark">Other Remark:</label>
+                <textarea id="otherRemark" name="otherRemark" [(ngModel)]="selectedVisitor.otherRemark" class="form-control" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="visitCard">Visa Card:</label>
+                <input type="text" id="visitCard" name="visitCard" [(ngModel)]="selectedVisitor.visitCard" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="photo">Photo:</label>
+                <div>
+                    <webcam [width]="150" [height]="100" [trigger]="triggerObservable" (imageCapture)="handleImageCapture($event)"></webcam>
+                </div>
+                <button type="button" class="btn btn-primary" (click)="capturePhoto()">Capture Photo</button>
+                <img *ngIf="selectedVisitor.photo" [src]="selectedVisitor.photo" alt="Captured Photo" class="captured-photo">
+                <img src="visitor-management/uploads/frame_1717929799909.jpg" alt=" ">
+
+            </div>
+        </div>
+
+        <div class="buttons ">
+            <button type="button " class="btn btn-secondary " (click)="cancel() ">Cancel</button>
+            <button type="button " class="btn btn-secondary " (click)="openPreviewDialog() ">Preview</button>
+            <button type="submit " class="btn btn-primary " (click)="onSubmit ">Submit</button>
+        </div>
+    </form>
+</div>

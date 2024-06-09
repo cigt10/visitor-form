@@ -1,0 +1,55 @@
+<!-- preview-dialog-component.component.html -->
+<div class="dialog-header">
+    <button mat-icon-button (click)="onClose()"></button>
+</div>
+<div class="identity-card">
+    <h3>Visitor Identity Card</h3>
+
+    <div class="field">
+        <img [src]="data.photo" alt="Visitor Photo" class="visitor-photo">
+    </div>
+    <div class="field">
+        <div class="label">Name: {{ data.name }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">LIC No: {{ data.licNo }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Mobile: {{ data.mobile }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Meet To: {{ data.meetTo }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Department: {{ data.department }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Purpose Remark: {{ data.purposeRemark }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Time In: {{ data.timeIn }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Time Out: {{ data.timeOut }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Other Remark: {{ data.otherRemark }}</div>
+
+    </div>
+    <div class="field">
+        <div class="label">Visit Card: {{ data.visitCard }}</div>
+
+    </div>
+    <button class="print-button" (click)="printPreview()">Print</button>
+
+
+
+</div>

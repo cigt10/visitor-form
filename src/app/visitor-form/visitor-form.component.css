@@ -1,0 +1,98 @@
+.visitor-form-container {
+    max-width: 1200px;
+    /* Adjust as needed */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.visitor-form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.visitor-form .form-group {
+    margin-bottom: 15px;
+}
+
+.visitor-form .form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.visitor-form .form-control {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.visitor-form .form-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    /* Four columns */
+    gap: 20px;
+}
+
+.visitor-form .buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.visitor-form .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: blue;
+    color: #ddd;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.captured-photo {
+    max-width: 200px;
+    margin-top: 10px;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+    /* Ensures all text aligns to the top */
+}
+
+.table th {
+    background-color: #f2f2f2;
+    position: -webkit-sticky;
+    /* for Safari */
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    /* Ensures the header stays above the rows */
+}
+
+.table td {
+    vertical-align: middle;
+    /* Ensures text aligns vertically in the middle */
+}
+
+.table img {
+    display: block;
+    margin: 0 auto;
+}
+
+.btn {
+    margin-right: 5px;
+}
