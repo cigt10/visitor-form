@@ -1,57 +1,64 @@
-<div class="visitor-list-container" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">>
-    <h2>Visitor Data</h2>
-    <div class="visitor">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>LIC No</th>
-                    <th>Mobile</th>
-                    <th>Meet To</th>
-                    <th>Department</th>
-                    <th>Purpose Remark</th>
-                    <th>Purpose Group</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Other Remark</th>
-                    <th>Visit Card</th>
-                    <th>Photo</th>
-                    <th>Created Date</th>
-                    <th>Updated Date</th>
-                </tr>
-            </thead>
-        </table>
-        <div class="table-body">
-            <table class="table" *ngFor="let visitor of allVisitors">
-                <tbody>
-                    <!-- <tr *ngIf="loading" class="loading"> -->
+<div class="visitor-list-container" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
+    <form action="">
+        <h2>Visitor Data</h2>
+        <div class="visitor">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>{{ visitor.name }}</td>
-                        <td>{{ visitor.licNo }}</td>
-                        <td>{{ visitor.mobile }}</td>
-                        <td>{{ visitor.meetTo }}</td>
-                        <td>{{ visitor.department }}</td>
-                        <td>{{ visitor.purposeRemark }}</td>
-                        <td>{{ visitor.purposeGroup }}</td>
-                        <td>{{ visitor.timein }}</td>
-                        <td>{{ visitor.timeout }}</td>
-                        <td>{{ visitor.otherRemark }}</td>
-                        <td>{{ visitor.visitCard }}</td>
-                        <td>
-                            <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 100px;">
-                        </td>
-                        <td>{{ visitor.created_date }}</td>
-                        <td>{{ visitor.updated_date }}</td>
-                        <td>
-                            <button class="btn btn-primary" (click)="getVisitor(visitor.id)">Edit</button>
-                            <button class="btn btn-danger" (click)="deleteVisitor(visitor.id)">Delete</button>
-                        </td>
+                        <th>Name</th>
+                        <th>LIC No</th>
+                        <th>Mobile</th>
+                        <th>Meet To</th>
+                        <th>Department</th>
+                        <th>Purpose Remark</th>
+                        <th>Purpose Group</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Other Remark</th>
+                        <th>Visit Card</th>
+                        <th>Photo</th>
+                        <th>Created Date</th>
+                        <th>Updated Date</th>
                     </tr>
-                </tbody>
+                </thead>
             </table>
+            <div class="table-body">
+                <table class="table">
+                    <tbody>
+                        <!-- <tr *ngIf="loading" class="loading"> *ngFor="let visitor of visitors" class="visitor-card" -->
+                        <tr *ngFor="let visitor of visitors">
+                            <td>{{ visitor.name }}</td>
+                            <td>{{ visitor.licNo }}</td>
+                            <td>{{ visitor.mobile }}</td>
+                            <td>{{ visitor.meetTo }}</td>
+                            <td>{{ visitor.department }}</td>
+                            <td>{{ visitor.purposeRemark }}</td>
+                            <td>{{ visitor.purposeGroup }}</td>
+                            <td>{{ visitor.timein }}</td>
+                            <td>{{ visitor.timeout }}</td>
+                            <td>{{ visitor.otherRemark }}</td>
+                            <td>{{ visitor.visitCard }}</td>
+                            <td>
+                                <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 100px;">
+                            </td>
+                            <td>{{ visitor.created_date }}</td>
+                            <td>{{ visitor.updated_date }}</td>
+                            <td>
+                                <button class="btn btn-primary" (click)="getVisitor(visitor.id)">Edit</button>
+                                <button class="btn btn-danger" (click)="deleteVisitor(visitor.id)">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="loading" class="loading-spinner">
+                Loading...
+            </div>
         </div>
-    </div>
-    <button (click)="exportToExcel()" class="btn btn-secondary">Export to Excel</button>
+        <button (click)="exportToExcel()" class="btn btn-secondary">Export to Excel</button>
+
+    </form>
+
 </div>
 
 <div class="visitor-form-container">

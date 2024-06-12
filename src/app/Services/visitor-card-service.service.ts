@@ -35,6 +35,10 @@ export class VisitorCardServiceService {
     );
   }
 
+  getPaginatedVisitors(page: number, limit: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}?page=${page}&limit=${limit}`);
+}
+
   updateVisitor(id: string, visitor: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, visitor).pipe(
       catchError(this.handleError<any>('updateVisitor'))

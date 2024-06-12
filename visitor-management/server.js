@@ -117,19 +117,22 @@ app.post('/api/visitors/save-image', (req, res) => {
 
 // Fetch all visitors
 app.get('/api/visitors', (req, res) => {
-    const page = parseInt(req.query.page) || 10;
-    const limit = parseInt(req.query.limit) || 5;
-    const offset = (page - 1) * limit;
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = page * limit;
 
-    db.query('SELECT * FROM visitors LIMIT ?, ?', [offset, limit], (err, results) => {
+    const query = 'SELECT * FROM visitors LIMIT ? OFFSET ?';
+
+    db.query(query, [limit, offset], (err, results) => {
         if (err) {
-            console.error('Error fetching visitors:', err);
-            res.status(500).json({ error: 'An error occurred while fetching visitors.' });
-        } else {
-            res.json(results);
+            console.error('Error fetching visitors:', err.message);
+            res.status(500).json({ message: 'Internal Server Error' });
+            return;
         }
+        res.json(results);
     });
 });
+
 // Search visitors based on query
 app.get('/api/visitors/search', (req, res) => {
     const query = req.query.q

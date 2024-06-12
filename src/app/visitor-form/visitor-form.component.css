@@ -96,3 +96,19 @@
 .btn {
     margin-right: 5px;
 }
+
+.visitor-list-container {
+    height: 498px;
+    /* Adjust this height as needed */
+    overflow-y: auto;
+}
+
+.visitor-table-container {
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+.loading-spinner {
+    text-align: center;
+    margin-top: 10px;
+}

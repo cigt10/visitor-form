@@ -100,7 +100,7 @@ public service : VisitorCardServiceService| undefined;
   }
 }*/
 
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener,ViewChild, ElementRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { WebcamImage, WebcamInitError } from 'ngx-webcam';
 import { Subject } from 'rxjs';
@@ -130,8 +130,9 @@ export class VisitorFormComponent implements OnInit {
   public visitors: any[] = [];
   public searchQuery: string = '';
   allVisitors: any[] = [];
+  @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
   loading = false;
-  itemsPerPage = 120;  // Number of items to load per scroll
+  itemsPerPage = 50;  // Number of items to load per scroll
   currentPage = 0;
   imageUrl:any
   public selectedVisitor: any = {
@@ -158,7 +159,7 @@ photo: any;
     public dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.loadAllVisitors();
+    this.loadVisitors();
   }
 
   getVisitors(): void {
@@ -189,28 +190,28 @@ photo: any;
   }
 
   
-  loadAllVisitors(): void {
-    this.loading = true;
-    this.vservice.getVisitors().subscribe(data => {
-      // console.log(JSON.stringify(data))
-      this.allVisitors = data;
-     // this.loadVisitors();
-      console.log(JSON.stringify(this.allVisitors ))
-      this.loading = false;
-    });
-  }
-
+ 
   loadVisitors(): void {
-    const nextPage = this.allVisitors.slice(this.currentPage * this.itemsPerPage, (this.currentPage + 1) * this.itemsPerPage);
-    this.visitors = [...this.visitors, ...nextPage];
-    this.currentPage++;
-  }
+    this.loading = true;
+    this.vservice.getPaginatedVisitors(this.currentPage, this.itemsPerPage).subscribe(
+        data => {
+            this.visitors = [...this.visitors, ...data];
+            this.loading = false;
+            this.currentPage++;
+        },
+        error => {
+            console.error('Error fetching visitors', error);
+            this.loading = false;
+        }
+    );
+}
 
-  onScroll(): void {
-    if (this.currentPage * this.itemsPerPage < this.allVisitors.length) {
+onScroll(): void {
+  const element = this.visitorListContainer.nativeElement;
+  if (element.scrollHeight - element.scrollTop === element.clientHeight && !this.loading) {
       this.loadVisitors();
-    }
   }
+}
 
   getVisitor(id: string): void {
     this.vservice.getVisitor(id).subscribe(data => {
