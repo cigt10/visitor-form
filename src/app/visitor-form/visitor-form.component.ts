@@ -132,25 +132,26 @@ export class VisitorFormComponent implements OnInit {
   allVisitors: any[] = [];
   @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
   loading = false;
-  itemsPerPage = 50;  // Number of items to load per scroll
+  itemsPerPage = 10;  // Number of items to load per scroll
   currentPage = 0;
   imageUrl:any
-  public selectedVisitor: any = {
-    name: '',
-    licNo: '',
-    mobile: '',
-    meetTo: '',
-    department: '',
-    purposeRemark: '',
-    purposeGroup: '',
-    timein: '',
-    timeout: '',
-    otherRemark: '',
-    visitCard: '',
-    photo: '',
-    created_date: '',
-    updated_date: ''
-  };
+  public selectedVisitor: any =this.initializeVisitor();
+  initializeVisitor() {
+    return {
+      name: '',
+      licNo: '',
+      mobile: '',
+      meetTo: '',
+      department: '',
+      purposeRemark: '',
+      purposeGroup: '',
+      timein: '',
+      timeout: '',
+      otherRemark: '',
+      visitCard: '',
+      photo: ''
+    };
+  }
 
   public triggerObservable: Subject<void> = new Subject<void>();
 photo: any;
@@ -206,10 +207,10 @@ photo: any;
     );
 }
 
-onScroll(): void {
-  const element = this.visitorListContainer.nativeElement;
-  if (element.scrollHeight - element.scrollTop === element.clientHeight && !this.loading) {
-      this.loadVisitors();
+onScroll() {
+  if (!this.loading) {
+    this.currentPage++;
+    this.loadVisitors();
   }
 }
 
@@ -288,6 +289,9 @@ onScroll(): void {
           console.error('Error adding visitor', error);
         }
       );
+    }else {
+      // Show validation errors
+      form.control.markAllAsTouched();
     }
      /* this.vservice.addVisitor(visitorData).subscribe(
         response => {

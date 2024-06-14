@@ -5,47 +5,47 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>LIC No</th>
-                        <th>Mobile</th>
-                        <th>Meet To</th>
-                        <th>Department</th>
-                        <th>Purpose Remark</th>
-                        <th>Purpose Group</th>
-                        <th>Time In</th>
-                        <th>Time Out</th>
-                        <th>Other Remark</th>
-                        <th>Visit Card</th>
-                        <th>Photo</th>
-                        <th>Created Date</th>
-                        <th>Updated Date</th>
+                        <th class="name-col">Name</th>
+                        <th class="lic-col">LIC No</th>
+                        <th class="mob-col">Mobile</th>
+                        <th class="meet-col">Meet To</th>
+                        <th class="dep-col">Department</th>
+                        <th class="pur-col">Purpose Remark</th>
+                        <th class="purp-col">Purpose Group</th>
+                        <th class="time-column">Time In</th>
+                        <th class="time1-column">Time Out</th>
+                        <th class="oth-col">Other Remark</th>
+                        <th class="vis-col">Visit Card</th>
+                        <th class="pho-col">Photo</th>
+                        <th class="cre-col">Created Date</th>
+                        <th class="up-col">Updated Date</th>
+                        <th class="act-col">Actions</th>
                     </tr>
                 </thead>
             </table>
             <div class="table-body">
                 <table class="table">
                     <tbody>
-                        <!-- <tr *ngIf="loading" class="loading"> *ngFor="let visitor of visitors" class="visitor-card" -->
-                        <tr *ngFor="let visitor of visitors">
-                            <td>{{ visitor.name }}</td>
-                            <td>{{ visitor.licNo }}</td>
-                            <td>{{ visitor.mobile }}</td>
-                            <td>{{ visitor.meetTo }}</td>
-                            <td>{{ visitor.department }}</td>
-                            <td>{{ visitor.purposeRemark }}</td>
-                            <td>{{ visitor.purposeGroup }}</td>
-                            <td>{{ visitor.timein }}</td>
-                            <td>{{ visitor.timeout }}</td>
-                            <td>{{ visitor.otherRemark }}</td>
-                            <td>{{ visitor.visitCard }}</td>
-                            <td>
+                        <tr *ngFor="let visitor of visitors" class="visitor-row">
+                            <td class="name-col">{{ visitor.name }}</td>
+                            <td class="lic-col">{{ visitor.licNo }}</td>
+                            <td class="mob-col">{{ visitor.mobile }}</td>
+                            <td class="meet-col">{{ visitor.meetTo }}</td>
+                            <td class="dep-col">{{ visitor.department }}</td>
+                            <td class="pur-col">{{ visitor.purposeRemark }}</td>
+                            <td class="purp-col">{{ visitor.purposeGroup }}</td>
+                            <td class="time-column">{{ visitor.timein }}</td>
+                            <td class="time1-column">{{ visitor.timeout }}</td>
+                            <td class="oth-col">{{ visitor.otherRemark }}</td>
+                            <td class="vis-col">{{ visitor.visitCard }}</td>
+                            <td class="pho-col">
                                 <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 100px;">
                             </td>
-                            <td>{{ visitor.created_date }}</td>
-                            <td>{{ visitor.updated_date }}</td>
-                            <td>
-                                <button class="btn btn-primary" (click)="getVisitor(visitor.id)">Edit</button>
-                                <button class="btn btn-danger" (click)="deleteVisitor(visitor.id)">Delete</button>
+                            <td class="cre-col">{{ visitor.created_date }}</td>
+                            <td class="up-col">{{ visitor.updated_date }}</td>
+                            <td class="act-col">
+                                <button class="btn btn-primary btn-edit" (click)="getVisitor(visitor.id)">Edit</button>
+                                <button class="btn btn-danger btn-delete" (click)="deleteVisitor(visitor.id)">Delete</button>
                             </td>
                         </tr>
                     </tbody>
@@ -56,10 +56,9 @@
             </div>
         </div>
         <button (click)="exportToExcel()" class="btn btn-secondary">Export to Excel</button>
-
     </form>
-
 </div>
+
 
 <div class="visitor-form-container">
     <h2>Visitor Form</h2>
@@ -73,18 +72,32 @@
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" [(ngModel)]="selectedVisitor.name" class="form-control" required>
+                <div *ngIf="visitorForm.controls['name']?.invalid && visitorForm.controls['name']?.touched">
+                    <small class="text-danger">Name is required.</small>
+                </div>
             </div>
+
             <div class="form-group">
                 <label for="licNo">LIC No:</label>
-                <input type="text" id="licNo" name="licNo" [(ngModel)]="selectedVisitor.licNo" class="form-control" required>
+                <input type="text" id="licNo" name="licNo" [(ngModel)]="selectedVisitor.licNo" class="form-control" required pattern="^\d{13}$" maxlength="13" #mobile="ngModel">
+                <div *ngIf="visitorForm.controls['licNo']?.invalid && visitorForm.controls['licNo']?.touched">
+                    <small class="text-danger">licNo is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="mobile">Mobile:</label>
-                <input type="text" id="mobile" name="mobile" [(ngModel)]="selectedVisitor.mobile" class="form-control" required>
+                <input type="text" id="mobile" name="mobile" [(ngModel)]="selectedVisitor.mobile" class="form-control" required pattern="^\d{10}$" maxlength="10" #mobile="ngModel">
+                <div *ngIf="mobile.errors && (mobile.dirty || mobile.touched)">
+                    <small class="text-danger" *ngIf="mobile.errors['required']">Mobile number is required.</small>
+                    <small class="text-primary" *ngIf="mobile.errors['pattern']">Mobile number must be 10 digits.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="meetTo">Meet To:</label>
                 <input type="text" id="meetTo" name="meetTo" [(ngModel)]="selectedVisitor.meetTo" class="form-control" required>
+                <div *ngIf="visitorForm.controls['meetTo']?.invalid && visitorForm.controls['meetTo']?.touched">
+                    <small class="text-danger">Meet To is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="department">Department:</label>
@@ -94,33 +107,52 @@
                     <option value="Finance">Finance</option>
                     <option value="IT">IT</option>
                 </select>
+                <div *ngIf="visitorForm.controls['department']?.invalid && visitorForm.controls['department']?.touched">
+                    <small class="text-danger">Department is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="purposeRemark">Purpose Remark:</label>
                 <textarea id="purposeRemark" name="purposeRemark" [(ngModel)]="selectedVisitor.purposeRemark" class="form-control" required></textarea>
+                <div *ngIf="visitorForm.controls['purposeRemark']?.invalid && visitorForm.controls['purposeRemark']?.touched">
+                    <small class="text-danger">Purpose Remark is required.</small>
+                </div>
+
             </div>
             <div class="form-group">
                 <label for="purposeGroup">Purpose Group:</label>
                 <select id="purposeGroup" name="purposeGroup" [(ngModel)]="selectedVisitor.purposeGroup" class="form-control">
-                    <option value="Option 1">Option 1</option>
-                    <option value="Option 2">Option 2</option>
+                    <option value="Option 1">Personal</option>
+                    <option value="Option 2">Business</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="timeIn">Time In:</label>
                 <input type="datetime-local" id="timeIn" name="timeIn" [(ngModel)]="selectedVisitor.timein" class="form-control" required>
+                <div *ngIf="visitorForm.controls['timeIn']?.invalid && visitorForm.controls['timeIn']?.touched">
+                    <small class="text-danger">Time In is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="timeOut">Time Out:</label>
                 <input type="datetime-local" id="timeOut" name="timeOut" [(ngModel)]="selectedVisitor.timeout" class="form-control" required>
+                <div *ngIf="visitorForm.controls['timeOut']?.invalid && visitorForm.controls['timeOut']?.touched">
+                    <small class="text-danger">Time Out is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="otherRemark">Other Remark:</label>
                 <textarea id="otherRemark" name="otherRemark" [(ngModel)]="selectedVisitor.otherRemark" class="form-control" required></textarea>
+                <div *ngIf="visitorForm.controls['otherRemark']?.invalid && visitorForm.controls['otherRemark']?.touched">
+                    <small class="text-danger">Other Remark is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="visitCard">Visa Card:</label>
                 <input type="text" id="visitCard" name="visitCard" [(ngModel)]="selectedVisitor.visitCard" class="form-control" required>
+                <div *ngIf="visitorForm.controls['visitCard']?.invalid && visitorForm.controls['visitCard']?.touched">
+                    <small class="text-danger">Visa Card is required.</small>
+                </div>
             </div>
             <div class="form-group">
                 <label for="photo">Photo:</label>

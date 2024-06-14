@@ -1,11 +1,82 @@
-.visitor-form-container {
-    max-width: 1200px;
-    /* Adjust as needed */
+.visitor-list-container {
+    max-width: 100%;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
+    height: 600px;
+    /* Adjust as needed */
+    overflow-y: auto;
+}
+
+.visitor-list-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    max-height: calc(100% - 90px);
+    /* Adjust this height based on your needs */
+    position: relative;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+}
+
+.table th {
+    background-color: #f2f2f2;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table img {
+    display: block;
+    margin: 0 auto;
+}
+
+.table-body {
+    max-height: 450px;
+    /* Adjust based on your layout */
+    overflow-y: auto;
+}
+
+.loading-spinner {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.btn {
+    margin-right: 5px;
+}
+
+.visitor-form-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 20px;
 }
 
 .visitor-form-container h2 {
@@ -31,7 +102,6 @@
 .visitor-form .form-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* Four columns */
     gap: 20px;
 }
 
@@ -45,7 +115,7 @@
     padding: 10px 20px;
     font-size: 16px;
     background-color: blue;
-    color: #ddd;
+    color: white;
     border: 1px solid #ddd;
     border-radius: 4px;
 }
@@ -55,60 +125,44 @@
     margin-top: 10px;
 }
 
-.table-container {
-    overflow-x: auto;
+.text-danger {
+    color: red;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
+.text-primary {
+    color: blue;
 }
 
-.table th,
-.table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    vertical-align: top;
-    /* Ensures all text aligns to the top */
+
+/* Specific button spacing for edit and delete buttons */
+
+.btn-edit {
+    margin-right: 10px;
+    /* Adjust the margin as needed */
 }
 
-.table th {
-    background-color: #f2f2f2;
-    position: -webkit-sticky;
-    /* for Safari */
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    /* Ensures the header stays above the rows */
+.btn-delete {
+    margin-left: 10px;
+    /* Adjust the margin as needed */
 }
 
-.table td {
-    vertical-align: middle;
-    /* Ensures text aligns vertically in the middle */
+
+/* Specific button styles for edit and delete buttons */
+
+.btn-edit {
+    background-color: darkgreen;
+    /* Green */
+    color: white;
+    margin-right: 25px;
+    width: 60px;
+    /* Adjust the margin as needed */
 }
 
-.table img {
-    display: block;
-    margin: 0 auto;
-}
-
-.btn {
-    margin-right: 5px;
-}
-
-.visitor-list-container {
-    height: 498px;
-    /* Adjust this height as needed */
-    overflow-y: auto;
-}
-
-.visitor-table-container {
-    max-height: 100%;
-    overflow-y: auto;
-}
-
-.loading-spinner {
-    text-align: center;
-    margin-top: 10px;
+.btn-delete {
+    background-color: rgb(241, 8, 8);
+    /* Red */
+    color: white;
+    margin-left: 1px;
+    width: 60px;
+    /* Adjust the margin as needed */
 }
