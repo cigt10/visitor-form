@@ -132,7 +132,7 @@ export class VisitorFormComponent implements OnInit {
   allVisitors: any[] = [];
   @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
   loading = false;
-  itemsPerPage = 10;  // Number of items to load per scroll
+  itemsPerPage = 4;  // Number of items to load per scroll
   currentPage = 0;
   imageUrl:any
   public selectedVisitor: any =this.initializeVisitor();
