@@ -65,9 +65,22 @@ export class VisitorCardServiceService {
     );
   }
 
-  saveImage(imageData: string): Observable<any> {
-    // Send imageData to the server
-    return this.http.post<any>(this.apiUrl+'/save-image', { imageData });
+  saveImage(image: string): Observable<any> {
+    const formData = new FormData();
+    const blob = this.dataURItoBlob(image);
+    formData.append('photo', blob, 'photo.png');
+    return this.http.post(`${this.apiUrl}/upload`, formData);
+  }
+
+  private dataURItoBlob(dataURI: string): Blob {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
   }
 
   private handleError<T>(operation = 'operation', result?: T) {

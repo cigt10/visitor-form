@@ -132,7 +132,7 @@ export class VisitorFormComponent implements OnInit {
   allVisitors: any[] = [];
   @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
   loading = false;
-  itemsPerPage = 4;  // Number of items to load per scroll
+  itemsPerPage = 700;  // Number of items to load per scroll
   currentPage = 0;
   imageUrl:any
   public selectedVisitor: any =this.initializeVisitor();
@@ -265,45 +265,88 @@ onScroll() {
     };
   }
 
+  // onSubmit(form: NgForm): void {
+  //   if (form.valid) {
+  //     const visitorData = { ...form.value, photo: this.selectedVisitor.photo };
+  //     // this.vservice.saveImage(this.imageUrl).subscribe(
+  //     //   response => {
+
+  //     //     visitorData.photo=response.imageName;
+  //     //     this.vservice.addVisitor(visitorData).subscribe(
+  //     //       response => {
+  //     //         console.log('Visitor added', JSON.stringify(response));
+  //     //         this.getVisitors(); // Refresh visitor list after adding
+  //     //       },
+  //     //       error => {
+  //     //         console.error('Error adding visitor', error);
+  //     //       }
+  //     //     );
+
+  //     //     console.log('image added', JSON.stringify(response.imageName));
+  //     //     this.getVisitors(); // Refresh visitor list after adding
+  //     //   },
+  //     //   error => {
+  //     //     console.error('Error adding visitor', error);
+  //     //   }
+      
+
+          
+  //         this.vservice.addVisitor(visitorData).subscribe(
+  //           response => {
+  //             console.log('Visitor added', JSON.stringify(response));
+  //             this.getVisitors(); // Refresh visitor list after adding
+  //           },
+  //           error => {
+  //             console.error('Error adding visitor', error);
+  //           }
+  //         );
+
+          
+       
+      
+  //   }else {
+  //     // Show validation errors
+  //     form.control.markAllAsTouched();
+  //   }
+  //    /* this.vservice.addVisitor(visitorData).subscribe(
+  //       response => {
+  //         console.log('Visitor added', JSON.stringify(response));
+  //         this.getVisitors(); // Refresh visitor list after adding
+  //       },
+  //       error => {
+  //         console.error('Error adding visitor', error);
+  //       }
+  //     );
+  //   }*/
+  // }
+
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      const visitorData = { ...form.value, photo: this.selectedVisitor.photo };
+      const visitorData = { ...form.value };
       this.vservice.saveImage(this.imageUrl).subscribe(
         response => {
-
-          visitorData.photo=response.imageName;
+          visitorData.photo = response.imagePath; // Use imagePath instead of imageName
           this.vservice.addVisitor(visitorData).subscribe(
             response => {
               console.log('Visitor added', JSON.stringify(response));
-              this.getVisitors(); // Refresh visitor list after adding
+              this.loadVisitors(); // Refresh visitor list after adding
             },
             error => {
               console.error('Error adding visitor', error);
             }
           );
-
-          console.log('image added', JSON.stringify(response.imageName));
-          this.getVisitors(); // Refresh visitor list after adding
+          console.log('Image added', JSON.stringify(response.imagePath));
         },
         error => {
-          console.error('Error adding visitor', error);
+          console.error('Error uploading image', error);
         }
       );
-    }else {
+    } else {
       // Show validation errors
       form.control.markAllAsTouched();
     }
-     /* this.vservice.addVisitor(visitorData).subscribe(
-        response => {
-          console.log('Visitor added', JSON.stringify(response));
-          this.getVisitors(); // Refresh visitor list after adding
-        },
-        error => {
-          console.error('Error adding visitor', error);
-        }
-      );
-    }*/
   }
+  
 
   onPhotoChange(event: any): void {
     const file = event.target.files[0];

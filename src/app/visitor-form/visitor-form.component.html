@@ -34,12 +34,12 @@
                             <td class="dep-col">{{ visitor.department }}</td>
                             <td class="pur-col">{{ visitor.purposeRemark }}</td>
                             <td class="purp-col">{{ visitor.purposeGroup }}</td>
-                            <td class="time-column">{{ visitor.timein }}</td>
-                            <td class="time1-column">{{ visitor.timeout }}</td>
+                            <td class="time-column">{{ visitor.timeIn }}</td>
+                            <td class="time1-column">{{ visitor.timeOut }}</td>
                             <td class="oth-col">{{ visitor.otherRemark }}</td>
                             <td class="vis-col">{{ visitor.visitCard }}</td>
                             <td class="pho-col">
-                                <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 100px;">
+                                <img *ngIf="visitor.photo" [src]=" visitor.photo" alt="Photo" style="max-width: 90px;">
                             </td>
                             <td class="cre-col">{{ visitor.created_date }}</td>
                             <td class="up-col">{{ visitor.updated_date }}</td>
@@ -161,15 +161,18 @@
                 </div>
                 <button type="button" class="btn btn-primary" (click)="capturePhoto()">Capture Photo</button>
                 <img *ngIf="selectedVisitor.photo" [src]="selectedVisitor.photo" alt="Captured Photo" class="captured-photo">
-                <img src="visitor-management/uploads/frame_1717929799909.jpg" alt=" ">
+                <!-- <img src="assets\photo\1721115322846.png" alt="vhvvhb "> -->
 
             </div>
+            <!-- <pre>{{ selectedVisitor | json }}</pre> -->
         </div>
 
         <div class="buttons ">
             <button type="button " class="btn btn-secondary " (click)="cancel() ">Cancel</button>
             <button type="button " class="btn btn-secondary " (click)="openPreviewDialog() ">Preview</button>
+            <!-- <button type="submit " class="btn btn-primary " onclick="onubmit ">Submit</button> -->
             <button type="submit " class="btn btn-primary " (click)="onSubmit ">Submit</button>
+
         </div>
     </form>
 </div>

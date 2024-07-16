@@ -70,6 +70,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: false }));
+app.use('/assets/photo', express.static(path.join(__dirname, 'src/assets/photo')));
 
 const db = mysql.createConnection({
     host: 'localhost',
@@ -89,31 +90,33 @@ db.connect(err => {
 
 
 
-app.post('/api/visitors/save-image', (req, res) => {
-    var data = req.body.imageData;
-    // console.log(photoBuffer);
-    var photoBuffer = null;
+// Create the directory if it doesn't exist
+const photoDir = path.join('C:\\Form\\myApp\\src\\assets\\photo');
+if (!fs.existsSync(photoDir)) {
+    fs.mkdirSync(photoDir, { recursive: true });
+}
 
-    var base64Data = data.replace(/^data:image\/\w+;base64,/, "");
-    photoBuffer = Buffer.from(base64Data, 'base64');
-
-
-    const imageName = `frame_${Date.now()}.jpg`;
-    const imagePath = `./uploads/${imageName}`;
-
-    fs.writeFile(imagePath, photoBuffer, (err) => {
-        if (err) {
-            console.error('Error saving image:', err);
-            res.status(500).send('Error saving image');
-        } else {
-            console.log('Image saved:', imageName);
-            res.status(200).send({
-                imageName: imageName
-            });
-        }
-    });
+// Multer storage setup
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, photoDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    }
 });
 
+const upload = multer({ storage });
+
+app.post('/api/visitors/upload', upload.single('photo'), (req, res) => {
+    try {
+        const imagePath = `assets/photo/${req.file.filename}`;
+        res.json({ imagePath });
+    } catch (err) {
+        console.error('Error uploading image:', err);
+        res.status(400).send('Error uploading image');
+    }
+});
 
 // Fetch all visitors
 app.get('/api/visitors', (req, res) => {
@@ -176,11 +179,7 @@ app.get('/api/visitors/:id', (req, res) => {
 // add new visitorr
 app.post('/api/visitors', (req, res) => {
     const visitor = req.body;
-    let photoBuffer = null;
-    if (visitor.photo) {
-        const base64Data = visitor.photo.replace(/^data:image\/\w+;base64,/, "");
-        photoBuffer = Buffer.from(base64Data, 'base64');
-    }
+    const photoPath = req.body.photo; // Assuming 'photo' contains the path
 
     const sql = 'INSERT INTO visitors (name, licNo, mobile, meetTo, department, purposeremark, purposegroup, timein, timeout, otherremark, visitCard, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 
@@ -196,8 +195,7 @@ app.post('/api/visitors', (req, res) => {
         visitor.timeOut,
         visitor.otherRemark,
         visitor.visitCard,
-        ""
-        //photoBuffer
+        photoPath // Use photo path instead of photo buffer
     ], (err, result) => {
         if (err) {
             console.error('Error adding visitor:', err);
@@ -207,7 +205,6 @@ app.post('/api/visitors', (req, res) => {
         res.status(200).send({ message: 'Visitor added' });
     });
 });
-
 
 // Update a visitor by ID
 app.put('/api/visitors/:id', (req, res) => {
@@ -260,7 +257,8 @@ app.delete('/api/visitors/:id', (req, res) => {
     });
 });
 
-const PORT = 3000;
+// Start the server
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
