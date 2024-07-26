@@ -35,10 +35,8 @@ export class VisitorCardServiceService {
     );
   }
 
-  getPaginatedVisitors(page: number, limit: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?page=${page}&limit=${limit}`).pipe(
-      catchError(this.handleError<any[]>('getPaginatedVisitors', []))
-    );
+  getPaginatedVisitors(page: number, limit: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:3000/api/visitors?page=${page}&limit=${limit}`);
   }
 
   updateVisitor(id: string, visitor: any): Observable<any> {

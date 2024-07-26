@@ -15,11 +15,11 @@
     margin-bottom: 20px;
 }
 
-.table-container {
+
+/* .table-container {
     width: 100%;
     overflow-x: auto;
     max-height: calc(100% - 90px);
-    /* Adjust this height based on your needs */
     position: relative;
 }
 
@@ -41,7 +41,7 @@
     background-color: #f2f2f2;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 1;
 }
 
 .table td {
@@ -54,10 +54,9 @@
 }
 
 .table-body {
-    max-height: 450px;
-    /* Adjust based on your layout */
+    max-height: 500px;
     overflow-y: auto;
-}
+} */
 
 .loading-spinner {
     text-align: center;
@@ -149,19 +148,106 @@
 /* Specific button styles for edit and delete buttons */
 
 .btn-edit {
-    background-color: darkgreen;
     /* Green */
     color: white;
     margin-right: 25px;
-    width: 60px;
+    width: 80px;
     /* Adjust the margin as needed */
 }
 
 .btn-delete {
-    background-color: rgb(241, 8, 8);
     /* Red */
     color: white;
     margin-left: 1px;
-    width: 60px;
+    width: 80px;
     /* Adjust the margin as needed */
+}
+
+
+/* Media Queries for Responsiveness */
+
+@media (max-width: 768px) {
+    .visitor-form {
+        flex-direction: column;
+    }
+    .form-group {
+        flex: 1 1 100%;
+    }
+    .visitor-list-container,
+    .visitor-form-container {
+        padding: 10px;
+        max-width: 100%;
+    }
+    .table td {
+        padding-left: 40%;
+    }
+    .table td::before {
+        padding-left: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    .visitor-form {
+        flex-direction: column;
+    }
+    .form-group {
+        flex: 1 1 100%;
+    }
+    .visitor-list-container,
+    .visitor-form-container {
+        padding: 5px;
+        max-width: 100%;
+    }
+    .table td {
+        padding-left: 30%;
+    }
+    .table td::before {
+        padding-left: 5px;
+    }
+    .buttons .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 320px) {
+    .visitor-form {
+        flex-direction: column;
+    }
+    .form-group {
+        flex: 1 1 100%;
+        margin: 5px;
+    }
+    .visitor-list-container,
+    .visitor-form-container {
+        padding: 2px;
+        max-width: 100%;
+    }
+    .table td {
+        padding-left: 20%;
+    }
+    .table td::before {
+        padding-left: 2px;
+    }
+    .buttons .btn {
+        width: 100%;
+        margin: 2px 0;
+    }
+    h2 {
+        font-size: 1.2em;
+    }
+    .form-control {
+        padding: 8px;
+    }
+}
+
+.visitor-list-container {
+    height: 600px;
+    /* Adjust as needed */
+    overflow: auto;
+}
+
+.viewport {
+    height: 100%;
+    /* Ensure the viewport takes the full height of the container */
 }

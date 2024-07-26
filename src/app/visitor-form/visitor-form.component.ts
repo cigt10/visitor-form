@@ -128,14 +128,17 @@ export class VisitorFormComponent implements OnInit {
   public otherremark:string  | undefined;
   public visitcard:string  | undefined;
   public visitors: any[] = [];
+  public filteredVisitors: any[] = [];
   public searchQuery: string = '';
   allVisitors: any[] = [];
   @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
-  loading = false;
-  itemsPerPage = 700;  // Number of items to load per scroll
-  currentPage = 0;
+  public currentPage: number = 1;
+  public totalPages: number = 1;
+  public itemsPerPage: number = 5;
+  public loading: boolean = false;
   imageUrl:any
   public selectedVisitor: any =this.initializeVisitor();
+  public paginationPages: number[] = [];
   initializeVisitor() {
     return {
       name: '',
@@ -161,14 +164,22 @@ photo: any;
 
   ngOnInit(): void {
     this.loadVisitors();
+    this.filteredVisitors = this.visitors;
   }
 
   getVisitors(): void {
     this.vservice.getVisitors().subscribe(data => {
       this.visitors = data;
+      this.filteredVisitors = data;
     }, error => {
       console.error('Error fetching visitors', error);
     });
+  }
+
+  searchd(): void {
+    this.filteredVisitors = this.visitors.filter(visitor =>
+      visitor.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
   }
 
   search(): void {
@@ -190,29 +201,55 @@ photo: any;
     }
   }
 
-  
- 
   loadVisitors(): void {
     this.loading = true;
-    this.vservice.getPaginatedVisitors(this.currentPage, this.itemsPerPage).subscribe(
-        data => {
-            this.visitors = [...this.visitors, ...data];
-            this.loading = false;
-            this.currentPage++;
-        },
-        error => {
-            console.error('Error fetching visitors', error);
-            this.loading = false;
-        }
+    this.vservice.getPaginatedVisitors(this.currentPage - 1, this.itemsPerPage).subscribe(
+      data => {
+        this.visitors = data.visitors;
+        this.totalPages = Math.ceil(data.total / this.itemsPerPage);
+        // this.updatePaginationPages();
+        this.loading = false;
+      },
+      error => {
+        console.error('Error fetching visitors', error);
+        this.loading = false;
+        // Display error message to the user
+        alert('Failed to load visitors. Please try again later.');
+      }
     );
-}
+  }
+  getPageNumbers(): number[] {
+    const maxPagesToShow = 3;
+    const pages: number[] = [];
+    const startPage = Math.max(1, this.currentPage - Math.floor(maxPagesToShow / 2));
+    const endPage = Math.min(this.totalPages, startPage + maxPagesToShow - 1);
 
-onScroll() {
-  if (!this.loading) {
-    this.currentPage++;
+    for (let page = startPage; page <= endPage; page++) {
+      pages.push(page);
+    }
+
+    return pages;
+  }
+
+  setPage(page: number): void {
+    this.currentPage = page;
     this.loadVisitors();
   }
-}
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.loadVisitors();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.loadVisitors();
+    }
+  }
+
 
   getVisitor(id: string): void {
     this.vservice.getVisitor(id).subscribe(data => {
@@ -320,16 +357,54 @@ onScroll() {
   //   }*/
   // }
 
+  // onSubmit(form: NgForm): void {
+  //   if (form.valid) {
+  //     const visitorData = { ...form.value };
+  //     this.vservice.saveImage(this.imageUrl).subscribe(
+  //       response => {
+  //         visitorData.photo = response.imagePath; // Use imagePath instead of imageName
+  //         this.vservice.addVisitor(visitorData).subscribe(
+  //           response => {
+  //             console.log('Visitor added', JSON.stringify(response));
+  //             this.loadVisitors(); // Refresh visitor list after adding
+  //             this.clearForm();
+  //           },
+  //           error => {
+  //             console.error('Error adding visitor', error);
+  //           }
+  //         );
+  //         console.log('Image added', JSON.stringify(response.imagePath));
+  //       },
+  //       error => {
+  //         console.error('Error uploading image', error);
+  //       }
+  //     );
+  //   } else {
+  //     // Show validation errors
+  //     form.control.markAllAsTouched();
+  //   }
+  // }
+
+  onVisitorSelect(visitor: any, event: any) {
+    if (event.target.checked) {
+      this.selectedVisitor = { ...visitor };  // Clone the selected visitor data
+    } else {
+      this.selectedVisitor = {};  // Reset the form if unchecked
+    }
+  }
+
   onSubmit(form: NgForm): void {
     if (form.valid) {
       const visitorData = { ...form.value };
       this.vservice.saveImage(this.imageUrl).subscribe(
         response => {
           visitorData.photo = response.imagePath; // Use imagePath instead of imageName
+          // Add visitorData without updating the existing visitor's ID
           this.vservice.addVisitor(visitorData).subscribe(
             response => {
               console.log('Visitor added', JSON.stringify(response));
               this.loadVisitors(); // Refresh visitor list after adding
+              this.clearForm();
             },
             error => {
               console.error('Error adding visitor', error);
@@ -417,7 +492,8 @@ onScroll() {
       { header: 'Other Remark', key: 'otherRemark', width: 20 },
       { header: 'Visit Card', key: 'visitCard', width: 20 },
       { header: 'Created Date', key: 'created_date', width: 20 },
-      { header: 'Updated Date', key: 'updated_date', width: 20 }
+      { header: 'Updated Date', key: 'updated_date', width: 20 },
+      { header: 'photo', key: 'photo', width: 20 }
     ];
 
     // Add data rows
@@ -430,12 +506,13 @@ onScroll() {
         department: visitor.department,
         purposeRemark: visitor.purposeRemark,
         purposeGroup: visitor.purposeGroup,
-        timein: visitor.timein,
-        timeout: visitor.timeout,
+        timein: visitor.timeIn,
+        timeout: visitor.timeOut,
         otherRemark: visitor.otherRemark,
         visitCard: visitor.visitCard,
         created_date: visitor.created_date,
-        updated_date: visitor.updated_date
+        updated_date: visitor.updated_date,
+        photo: visitor.photo
       });
     });
 

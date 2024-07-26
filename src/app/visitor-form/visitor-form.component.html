@@ -1,7 +1,7 @@
-<div class="visitor-list-container" infiniteScroll [infiniteScrollDistance]="2" [infiniteScrollThrottle]="300" (scrolled)="onScroll()">
+<!-- <div class="visitor-list-container">
     <form action="">
         <h2>Visitor Data</h2>
-        <div class="visitor">
+        <div class="visitor" *ngIf="visitors.length > 0">
             <table class="table">
                 <thead>
                     <tr>
@@ -55,12 +55,128 @@
                 Loading...
             </div>
         </div>
-        <button (click)="exportToExcel()" class="btn btn-secondary">Export to Excel</button>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end align-items-center">
+                <button class="btn btn-primary mt-3 mr-2" (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+                <button class="btn btn-primary mt-3 mr-2" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+                <button (click)="exportToExcel()" class="btn btn-primary mt-3">Export to Excel</button>
+            </div>
+        </div>
+
     </form>
+</div> -->
+
+<div class="container visitor-list-container mt-4">
+    <h2>Visitor Data</h2>
+    <div>
+        <input type="text" placeholder="Search by name" [(ngModel)]="searchQuery" (input)="searchd()" />
+    </div>
+    <div *ngIf="visitors.length > 0">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Select</th>
+                        <th class="name-col">Name</th>
+                        <th class="lic-col">LIC No</th>
+                        <th class="mob-col">Mobile</th>
+                        <th class="meet-col">Meet To</th>
+                        <th class="dep-col">Department</th>
+                        <th class="pur-col">Purpose Remark</th>
+                        <th class="purp-col">Purpose Group</th>
+                        <th class="time-column">Time In</th>
+                        <th class="time1-column">Time Out</th>
+                        <th class="oth-col">Other Remark</th>
+                        <th class="vis-col">Visit Card</th>
+                        <th class="pho-col">Photo</th>
+                        <th class="cre-col">Created Date</th>
+                        <th class="up-col">Updated Date</th>
+                        <th class="act-col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let visitor of visitors" class="visitor-row">
+                        <td>
+                            <input type="checkbox" (change)="onVisitorSelect(visitor, $event)">
+                        </td>
+                        <td class="name-col">{{ visitor.name }}</td>
+                        <td class="lic-col">{{ visitor.licNo }}</td>
+                        <td class="mob-col">{{ visitor.mobile }}</td>
+                        <td class="meet-col">{{ visitor.meetTo }}</td>
+                        <td class="dep-col">{{ visitor.department }}</td>
+                        <td class="pur-col">{{ visitor.purposeRemark }}</td>
+                        <td class="purp-col">{{ visitor.purposeGroup }}</td>
+                        <td class="time-column">{{ visitor.timeIn }}</td>
+                        <td class="time1-column">{{ visitor.timeOut }}</td>
+                        <td class="oth-col">{{ visitor.otherRemark }}</td>
+                        <td class="vis-col">{{ visitor.visitCard }}</td>
+                        <td class="pho-col">
+                            <img *ngIf="visitor.photo" [src]="visitor.photo" alt="Photo" style="max-width: 90px;">
+                        </td>
+                        <td class="cre-col">{{ visitor.created_date }}</td>
+                        <td class="up-col">{{ visitor.updated_date }}</td>
+                        <td class="act-col">
+                            <button class="btn btn-primary btn-edit mr-2" (click)="getVisitor(visitor.id)">Edit</button>
+                            <button class="btn btn-danger btn-delete mt-2" (click)="deleteVisitor(visitor.id)">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row mt-3">
+
+            <nav aria-label="Visitor pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" [class.disabled]="currentPage === 1">
+                        <a class="page-link" (click)="previousPage()" aria-label="Previous">
+                            <span aria-hidden="true">Previous</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item" *ngIf="currentPage > 3">
+                        <a class="page-link" (click)="setPage(1)">1</a>
+                    </li>
+                    <li class="page-item" *ngIf="currentPage > 3">
+                        <span class="page-link">...</span>
+                    </li>
+
+                    <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+                        <a class="page-link" (click)="setPage(page)">{{ page }}</a>
+                    </li>
+
+                    <li class="page-item" *ngIf="currentPage < totalPages - 2">
+                        <span class="page-link">...</span>
+                    </li>
+                    <li class="page-item" *ngIf="currentPage < totalPages - 2">
+                        <a class="page-link" (click)="setPage(totalPages)">{{ totalPages }}</a>
+                    </li>
+
+                    <li class="page-item" [class.disabled]="currentPage === totalPages">
+                        <a class="page-link" (click)="nextPage()" aria-label="Next">
+                            <span aria-hidden="true">Next</span>
+                        </a>
+                    </li>
+
+                    <li>
+
+                        <button (click)="exportToExcel()" class="btn btn-primary ml-3">Export to Excel</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+
+    <div *ngIf="visitors.length === 0" class="text-center">
+        <p>No visitors found.</p>
+    </div>
 </div>
 
 
-<div class="visitor-form-container">
+
+
+<div class="visitor-form-container mt-5">
     <h2>Visitor Form</h2>
     <form #visitorForm="ngForm" (ngSubmit)="onSubmit(visitorForm)" class="visitor-form">
         <div class="form-group">

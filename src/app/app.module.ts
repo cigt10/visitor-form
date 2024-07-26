@@ -14,6 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { VisitorCardServiceService } from './Services/visitor-card-service.service';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { CdkVirtualScrollViewport } from '@angular/cdk/scrolling';
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -33,7 +36,10 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
     MatInputModule,
     MatButtonModule,
     MatFormFieldModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    CdkVirtualScrollViewport,
+    ScrollingModule,
+    MatPaginatorModule 
   ],
 
   providers: [

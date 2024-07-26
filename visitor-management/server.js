@@ -118,13 +118,14 @@ app.post('/api/visitors/upload', upload.single('photo'), (req, res) => {
     }
 });
 
-// Fetch all visitors
+// Fetch all visitors with pagination
 app.get('/api/visitors', (req, res) => {
     const page = parseInt(req.query.page) || 0;
     const limit = parseInt(req.query.limit) || 10;
     const offset = page * limit;
 
-    const query = 'SELECT * FROM visitors LIMIT ? OFFSET ?';
+    const query = 'SELECT SQL_CALC_FOUND_ROWS * FROM visitors LIMIT ? OFFSET ?';
+    const countQuery = 'SELECT FOUND_ROWS() as total';
 
     db.query(query, [limit, offset], (err, results) => {
         if (err) {
@@ -132,9 +133,21 @@ app.get('/api/visitors', (req, res) => {
             res.status(500).json({ message: 'Internal Server Error' });
             return;
         }
-        res.json(results);
+
+        db.query(countQuery, (err, countResult) => {
+            if (err) {
+                console.error('Error fetching total count:', err.message);
+                res.status(500).json({ message: 'Internal Server Error' });
+                return;
+            }
+
+            const total = countResult[0].total;
+            res.json({ visitors: results, total });
+        });
     });
 });
+
+
 
 // Search visitors based on query
 app.get('/api/visitors/search', (req, res) => {
