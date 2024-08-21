@@ -147,6 +147,73 @@ app.get('/api/visitors', (req, res) => {
     });
 });
 
+////
+app.get('/api/allvisitors', (req, res) => {
+    var deptName = "";
+    var startDate = "";
+    var endDate = "";
+
+    var query = 'SELECT SQL_CALC_FOUND_ROWS * FROM visitors';
+    // if (deptName != null) {
+
+    //     query = query + "where department=" + deptName;
+    // }
+    // // Add if conditopn for startate
+    // if (startDate != null && endDate != null) {
+
+    //     query = query + "and timein between " + startDate + " and " + endDate;
+    // }
+
+    console.log(query);
+
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error fetching visitors:', err.message);
+            res.status(500).json({ message: 'Internal Server Error' });
+            return;
+        }
+        console.log(JSON.stringify(results))
+        res.json({ visitors: results });
+        // db.query(countQuery, (err, countResult) => {
+        //     if (err) {
+        //         console.error('Error fetching all visitors:', err.message);
+        //         res.status(500).json({ message: 'Internal Server Error' });
+        //         return;
+        //     }
+
+        //     console.log(JSON.stringify(results))
+        //     res.json({ visitors: results });
+        // });
+    });
+});
+
+
+
+// Search visitors by date range
+app.get('/api/visitors/byDateRange', (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    // Check if both startDate and endDate are provided
+    if (!startDate || !endDate) {
+        return res.status(400).json({ error: 'Please provide both startDate and endDate' });
+    }
+
+    // SQL query to fetch visitors within the date range
+    const sql = `
+        SELECT * FROM visitors
+        WHERE timeIn BETWEEN ? AND ?
+        AND timeOut BETWEEN ? AND ?
+    `;
+
+    db.query(sql, [startDate, endDate, startDate, endDate], (err, results) => {
+        if (err) {
+            console.error('Error fetching visitors by date range:', err);
+            return res.status(500).json({ error: 'An error occurred while fetching visitors by date range.' });
+        }
+
+        res.json({ visitors: results });
+    });
+});
 
 
 // Search visitors based on query
@@ -162,7 +229,8 @@ app.get('/api/visitors/search', (req, res) => {
         } else {
             results.forEach(data => {
                 if (data.photo) {
-                    data.photo = Buffer.from(data.photo).toString('base64');
+                    data.photo = `${data.photo}`;
+                    console.log('Photo path:', data.photo);
                 }
             });
             res.json(results);

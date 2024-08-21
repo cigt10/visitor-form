@@ -103,7 +103,7 @@ public service : VisitorCardServiceService| undefined;
 import { Component, OnInit, HostListener,ViewChild, ElementRef } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { WebcamImage, WebcamInitError } from 'ngx-webcam';
-import { Subject } from 'rxjs';
+import { filter, Subject } from 'rxjs';
 import { VisitorCardServiceService } from '../Services/visitor-card-service.service';
 import { MatDialog } from '@angular/material/dialog';
 import { PreviewDialogComponentComponent } from '../preview-dialog-component/preview-dialog-component.component';
@@ -128,15 +128,25 @@ export class VisitorFormComponent implements OnInit {
   public otherremark:string  | undefined;
   public visitcard:string  | undefined;
   public visitors: any[] = [];
+  public allvisitors: any[] = [];
   public filteredVisitors: any[] = [];
   public searchQuery: string = '';
-  allVisitors: any[] = [];
+  public searchtext: string = '';
+  visitorData: any[] = [];
+  startDate: any;
+  endDate: any;
+  searchTimeIn: string = ''; 
+  searchTimeOut: string = '';
+ // allVisitors: any[] = [];
   @ViewChild('visitorListContainer') visitorListContainer!: ElementRef;
   public currentPage: number = 1;
   public totalPages: number = 1;
   public itemsPerPage: number = 5;
   public loading: boolean = false;
-  imageUrl:any
+  imageUrl:any;
+  public deptName:any;
+  public startDateIn:any;
+  public endDateIn:any;
   public selectedVisitor: any =this.initializeVisitor();
   public paginationPages: number[] = [];
   initializeVisitor() {
@@ -148,8 +158,8 @@ export class VisitorFormComponent implements OnInit {
       department: '',
       purposeRemark: '',
       purposeGroup: '',
-      timein: '',
-      timeout: '',
+      timeIn: '',
+      timeOut: '',
       otherRemark: '',
       visitCard: '',
       photo: ''
@@ -165,6 +175,8 @@ photo: any;
   ngOnInit(): void {
     this.loadVisitors();
     this.filteredVisitors = this.visitors;
+    this.loadAllVisitors();
+    
   }
 
   getVisitors(): void {
@@ -177,10 +189,92 @@ photo: any;
   }
 
   searchd(): void {
-    this.filteredVisitors = this.visitors.filter(visitor =>
-      visitor.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+    const query = this.searchtext.toLowerCase();
+    // console.log(this.filteredVisitors);
+    // console.log(query);
+    // console.log(this.visitors);
+    // console.log(filter);
+    this.filteredVisitors = this.visitors.filter(visitor => 
+      visitor.name.toLowerCase().includes(query),
+      this.visitors = this.filteredVisitors
+    );
+     console.log(this.filteredVisitors);
+    // console.log(query.length);
+
+    if (query.length === 0) {
+      this.loadVisitors(); 
+    }
+  }
+
+  searchByTime() {
+    const startDateInput = (document.getElementById('startDate') as HTMLInputElement).value;
+    const endDateInput = (document.getElementById('endDate') as HTMLInputElement).value;
+
+    const formattedStartDate = this.formatDateToISO(startDateInput);
+    const formattedEndDate = this.formatDateToISO(endDateInput);
+
+    this.vservice.searchVisitorsByDateRange(formattedStartDate, formattedEndDate).subscribe(
+      (data) => {
+        this.visitors = data.visitors;
+        // console.log(data.visitors);
+        // console.log('Visitors found:', data);
+        // Handle the data (e.g., display it in your component)
+      },
+      (error) => {
+        console.error('Error searching visitors by time:', error);
+      }
     );
   }
+
+  formatDateToISO(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toISOString();
+  }
+  formatToDisplay(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleString(); // This will format the date as per the locale
+  }
+  
+  // searchByTime(): void {
+  //   const startDate = new Date(this.searchTimeIn).toISOString();
+  //   const endDate = new Date(this.searchTimeOut).toISOString();
+    
+  //   this.vservice.searchVisitorsByDateRange(startDate, endDate).subscribe(
+  //     (data: any[]) => {
+  //       if (data.length > 0) {
+  //         this.filteredVisitors = data;
+  //       } else {
+  //         this.clearForm();
+  //         console.log('No visitors found in this time range.');
+  //       }
+  //     },
+  //     error => {
+  //       console.error('Error searching visitors by time', error);
+  //     }
+  //   );
+  // }     
+
+  
+  
+  // search(): void {
+  //   if (this.searchQuery) {
+  //     this.vservice.searchVisitors(this.searchQuery).subscribe(
+  //       (data: any[]) => {
+  //         if (data.length > 0) {
+  //           this.selectedVisitor = data[0];
+  //           console.log(this.selectedVisitor)
+  //         } else {
+  //           this.clearForm();
+  //         }
+  //       },
+  //       error => {
+  //         console.error('Error searching visitors', error);
+  //       }
+  //     );
+  //   } else {
+  //     this.clearForm();
+  //   }
+  // }
 
   search(): void {
     if (this.searchQuery) {
@@ -188,6 +282,14 @@ photo: any;
         (data: any[]) => {
           if (data.length > 0) {
             this.selectedVisitor = data[0];
+            // Format the timeIn and timeOut fields for the datetime-local input
+            if (this.selectedVisitor.timeIn) {
+              this.selectedVisitor.timeIn = this.formatDateForInput(this.selectedVisitor.timeIn);
+            }
+            if (this.selectedVisitor.timeOut) {
+              this.selectedVisitor.timeOut = this.formatDateForInput(this.selectedVisitor.timeOut);
+            }
+            console.log(this.selectedVisitor);
           } else {
             this.clearForm();
           }
@@ -200,6 +302,14 @@ photo: any;
       this.clearForm();
     }
   }
+  
+  // Helper method to format date
+  formatDateForInput(isoString: string): string {
+    const date = new Date(isoString);
+    // Returns 'yyyy-MM-ddThh:mm'
+    return date.toISOString().slice(0, 16);
+  }
+  
 
   loadVisitors(): void {
     this.loading = true;
@@ -218,6 +328,29 @@ photo: any;
       }
     );
   }
+
+  loadAllVisitors(): any[] {
+    this.loading = true;
+    // this.vservice.getAllVisitors(this.deptName, this.startDate, this.endDate ).subscribe(
+      this.vservice.getAllVisitors(this.deptName, this.startDate, this.endDate ).subscribe(
+
+      data => {
+        this.allvisitors = data.visitors;
+        console.log(this.allvisitors);
+        // this.updatePaginationPages();
+        
+      },
+      error => {
+        console.error('Error fetching visitors', error);
+        
+        // Display error message to the user
+        alert('Failed to load visitors. Please try again later.');
+      }
+    );
+    
+    return this.allvisitors;
+  }
+
   getPageNumbers(): number[] {
     const maxPagesToShow = 3;
     const pages: number[] = [];
@@ -251,13 +384,43 @@ photo: any;
   }
 
 
-  getVisitor(id: string): void {
-    this.vservice.getVisitor(id).subscribe(data => {
-      this.selectedVisitor = data;
-    }, error => {
+   getVisitor(id: string): void {
+     this.vservice.getVisitor(id).subscribe(data => {
+       this.selectedVisitor = data;
+     }, error => {
       console.error('Error fetching visitor', error);
     });
-  }
+   }
+
+  // getVisitor(id: string): void {
+  //   this.vservice.getVisitor(id).subscribe(
+  //     data => {
+  //       // Convert the timeIn and timeOut to the required format
+  //       this.selectedVisitor = data;
+
+  //       console.log(this.selectedVisitor);
+  //       if (this.selectedVisitor.timeIn) {
+  //         this.selectedVisitor.timeIn = this.formatDateForInput(this.selectedVisitor.timeIn);
+  //       }
+  //       if (this.selectedVisitor.timeOut) {
+  //         this.selectedVisitor.timeOut = this.formatDateForInput(this.selectedVisitor.timeOut);
+  //       }
+  //     },
+  //     error => {
+  //       console.error('Error fetching visitor', error);
+  //     }
+  //   );
+  // }
+  
+  // // Helper method to format date
+  // formatDateForInput(isoString: string): string {
+  //   const date = new Date(isoString);
+  //   // Returns 'yyyy-MM-ddThh:mm'
+  //   return date.toISOString().slice(0, 16);
+  // }
+  
+  
+  
 
   updateVisitor(): void {
     if (this.selectedVisitor.id) {
@@ -357,12 +520,70 @@ photo: any;
   //   }*/
   // }
 
+   onSubmit(form: NgForm): void {
+     if (form.valid) {
+      const visitorData = { ...form.value };
+       this.vservice.saveImage(this.imageUrl).subscribe(
+         response => {
+           visitorData.photo = response.imagePath; // Use imagePath instead of imageName
+         this.vservice.addVisitor(visitorData).subscribe(
+           response => {
+               console.log('Visitor added', JSON.stringify(response));
+              this.loadVisitors(); // Refresh visitor list after adding
+            this.clearForm();
+            },
+            error => {
+              console.error('Error adding visitor', error);
+             }
+          );
+           console.log('Image added', JSON.stringify(response.imagePath));
+         },
+         error => {
+         console.error('Error uploading image', error);
+        }
+      );
+    } else {
+   // Show validation errors
+      form.control.markAllAsTouched();
+    }
+  }
+
+  // onVisitorSelect(visitor: any, event: any) {
+  //   if (event.target.checked) {
+  //     this.selectedVisitor = { ...visitor };  // Clone the selected visitor data
+  //   } else {
+  //     this.selectedVisitor = {};  // Reset the form if unchecked
+  //   }
+  // }
+
+  onVisitorSelect(visitor: any, event: any) {
+    if (event.target.checked) {
+        this.selectedVisitor = { ...visitor };  // Clone the selected visitor data
+
+        // Format the timeIn and timeOut to match the datetime-local input format
+        if (this.selectedVisitor.timeIn) {
+            this.selectedVisitor.timeIn = this.formatDateForInput(this.selectedVisitor.timeIn);
+        }
+        if (this.selectedVisitor.timeOut) {
+            this.selectedVisitor.timeOut = this.formatDateForInput(this.selectedVisitor.timeOut);
+        }
+    } else {
+        this.selectedVisitor = {};  // Reset the form if unchecked
+    }
+}
+
+
+
+
   // onSubmit(form: NgForm): void {
   //   if (form.valid) {
-  //     const visitorData = { ...form.value };
+  //     const visitorData = { ...form.value,
+  //       timeIn: new Date(form.value.timeIn).toISOString(),
+  //       timeOut: new Date(form.value.timeOut).toISOString() };
   //     this.vservice.saveImage(this.imageUrl).subscribe(
   //       response => {
   //         visitorData.photo = response.imagePath; // Use imagePath instead of imageName
+  //         // Add visitorData without updating the existing visitor's ID
   //         this.vservice.addVisitor(visitorData).subscribe(
   //           response => {
   //             console.log('Visitor added', JSON.stringify(response));
@@ -384,43 +605,6 @@ photo: any;
   //     form.control.markAllAsTouched();
   //   }
   // }
-
-  onVisitorSelect(visitor: any, event: any) {
-    if (event.target.checked) {
-      this.selectedVisitor = { ...visitor };  // Clone the selected visitor data
-    } else {
-      this.selectedVisitor = {};  // Reset the form if unchecked
-    }
-  }
-
-  onSubmit(form: NgForm): void {
-    if (form.valid) {
-      const visitorData = { ...form.value };
-      this.vservice.saveImage(this.imageUrl).subscribe(
-        response => {
-          visitorData.photo = response.imagePath; // Use imagePath instead of imageName
-          // Add visitorData without updating the existing visitor's ID
-          this.vservice.addVisitor(visitorData).subscribe(
-            response => {
-              console.log('Visitor added', JSON.stringify(response));
-              this.loadVisitors(); // Refresh visitor list after adding
-              this.clearForm();
-            },
-            error => {
-              console.error('Error adding visitor', error);
-            }
-          );
-          console.log('Image added', JSON.stringify(response.imagePath));
-        },
-        error => {
-          console.error('Error uploading image', error);
-        }
-      );
-    } else {
-      // Show validation errors
-      form.control.markAllAsTouched();
-    }
-  }
   
 
   onPhotoChange(event: any): void {
@@ -439,7 +623,7 @@ photo: any;
   handleImageCapture(webcamImage: WebcamImage): void {
     this.selectedVisitor.photo = webcamImage.imageAsDataUrl;
     this.imageUrl=webcamImage.imageAsDataUrl
-    //console.log(this.imageUrl);
+    console.log(this.imageUrl);
   }
 
   webcamError(error: WebcamInitError): void {
@@ -495,9 +679,13 @@ photo: any;
       { header: 'Updated Date', key: 'updated_date', width: 20 },
       { header: 'photo', key: 'photo', width: 20 }
     ];
+    // var res = this.loadAllVisitors();
+    var res = this.visitors;
 
     // Add data rows
-    this.visitors.forEach(visitor => {
+console.log(res);
+Array.from(res).forEach(visitor => {
+  console.log(visitor.name);
       worksheet.addRow({
         name: visitor.name,
         licNo: visitor.licNo,

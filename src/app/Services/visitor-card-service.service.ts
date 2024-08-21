@@ -29,6 +29,10 @@ export class VisitorCardServiceService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getAllVisitors(deptName: any, startDateIn: any, endDateIn: any): Observable<any> {
+    return this.http.get<any>(`http://localhost:3000/api/allvisitors?deptName=${deptName}&startDate=${startDateIn}&endDate=${endDateIn}`);
+  }
+
   getVisitor(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError<any>(`getVisitor id=${id}`))
@@ -38,6 +42,17 @@ export class VisitorCardServiceService {
   getPaginatedVisitors(page: number, limit: number): Observable<any> {
     return this.http.get<any>(`http://localhost:3000/api/visitors?page=${page}&limit=${limit}`);
   }
+
+  searchVisitorsByDateRange(startDate: string, endDate: string): Observable<{ visitors: any[] }> {
+    return this.http.get<{ visitors: any[] }>(`${this.apiUrl}/byDateRange`, {
+        params: {
+            startDate: startDate,
+            endDate: endDate
+        }
+    });
+}
+
+  
 
   updateVisitor(id: string, visitor: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/${id}`, visitor).pipe(
